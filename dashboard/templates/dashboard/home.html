@@ -1,0 +1,41 @@
+<h2>Dashboard Overview</h2>
+
+<h3>Energy Forecast</h3>
+<table border="1">
+    <tr>
+        <th>Timestamp</th>
+        <th>Solar Output</th>
+        <th>Wind Output</th>
+    </tr>
+    {% for row in forecasts %}
+    <tr>
+        <td>{{ row.timestamp }}</td>
+        <td>{{ row.solar_output }}</td>
+        <td>{{ row.wind_output }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Predictive Maintenance Alerts</h3>
+<table border="1">
+    <tr>
+        <th>Equipment ID</th>
+        <th>Temperature</th>
+        <th>Vibration</th>
+        <th>Pressure</th>
+        <th>Failure Risk</th>
+    </tr>
+    {% for sensor in sensors %}
+    <tr>
+        <td>{{ sensor.equipment_id }}</td>
+        <td>{{ sensor.temperature }}</td>
+        <td>{{ sensor.vibration }}</td>
+        <td>{{ sensor.pressure }}</td>
+        <td style="color: {% if sensor.failure_risk > 0.5 %}red{% else %}green{% endif %}">
+            {{ sensor.failure_risk|floatformat:2 }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'dashboard:map_view' %}">View GIS Map</a>

@@ -1,0 +1,21 @@
+<h2>Predictive Maintenance Dashboard</h2>
+<table border="1">
+    <tr>
+        <th>Equipment ID</th>
+        <th>Temperature</th>
+        <th>Vibration</th>
+        <th>Pressure</th>
+        <th>Failure Risk</th>
+    </tr>
+    {% for sensor in sensors %}
+    <tr>
+        <td>{{ sensor.equipment_id }}</td>
+        <td>{{ sensor.temperature }}</td>
+        <td>{{ sensor.vibration }}</td>
+        <td>{{ sensor.pressure }}</td>
+        <td style="color: {% if sensor.failure_risk > 0.5 %}red{% else %}green{% endif %}">
+            {{ sensor.failure_risk|floatformat:2 }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>

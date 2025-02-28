@@ -1,0 +1,13 @@
+<h2>Energy Forecast</h2>
+<table>
+    <tr>
+        <th>Time</th>
+        <th>Predicted Output</th>
+    </tr>
+    {% for row in forecast.itertuples %}
+    <tr>
+        <td>{{ row.ds }}</td>
+        <td>{{ row.yhat }}</td>
+    </tr>
+    {% endfor %}
+</table>
