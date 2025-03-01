@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Energy Reports & Grid Balancing</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <h2>CO₂ Savings & ESG Reports</h2>
+    <table border="1">
+        <tr>
+            <th>Timestamp</th>
+            <th>Total Energy Generated (MW)</th>
+            <th>Fossil Fuel Offset (MW)</th>
+            <th>CO₂ Reduction (kg)</th>
+        </tr>
+        {% for report in sustainability_reports %}
+        <tr>
+            <td>{{ report.timestamp }}</td>
+            <td>{{ report.total_energy_generated }}</td>
+            <td>{{ report.fossil_fuel_offset }}</td>
+            <td>{{ report.co2_reduction }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Grid Demand-Supply Balancing</h2>
+    <canvas id="gridBalanceChart"></canvas>
+
+    <script>
+        var labels = [{% for balance in grid_balances %}"{{ balance.timestamp }}",{% endfor %}];
+        var demandData = [{% for balance in grid_balances %}{{ balance.energy_demand }},{% endfor %}];
+        var supplyData = [{% for balance in grid_balances %}{{ balance.energy_supply }},{% endfor %}];
+
+        var ctx = document.getElementById('gridBalanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Energy Demand (MW)',
+                        data: demandData,
+                        borderColor: 'red',
+                        fill: false
+                    },
+                    {
+                        label: 'Energy Supply (MW)',
+                        data: supplyData,
+                        borderColor: 'green',
+                        fill: false
+                    }
+                ]
+            }
+        });
+    </script>
+
+</body>
+</html>
