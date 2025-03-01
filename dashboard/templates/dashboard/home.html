@@ -8,47 +8,6 @@
 
     <h2>Dashboard Overview</h2>
 
-    <!-- Energy Forecast -->
-    <h3>Energy Forecast (Next 72 Hours)</h3>
-    <canvas id="solarChart"></canvas>
-    <canvas id="windChart"></canvas>
-
-    <script>
-        var solarLabels = {{ solar_labels|safe }};
-        var solarData = {{ solar_data|safe }};
-        var windLabels = {{ wind_labels|safe }};
-        var windData = {{ wind_data|safe }};
-
-        var solarCtx = document.getElementById('solarChart').getContext('2d');
-        var windCtx = document.getElementById('windChart').getContext('2d');
-
-        new Chart(solarCtx, {
-            type: 'line',
-            data: {
-                labels: solarLabels,
-                datasets: [{
-                    label: 'Solar Output (MW)',
-                    data: solarData,
-                    borderColor: 'orange',
-                    fill: false
-                }]
-            }
-        });
-
-        new Chart(windCtx, {
-            type: 'line',
-            data: {
-                labels: windLabels,
-                datasets: [{
-                    label: 'Wind Output (MW)',
-                    data: windData,
-                    borderColor: 'blue',
-                    fill: false
-                }]
-            }
-        });
-    </script>
-
     <!-- Predictive Maintenance Alerts -->
     <h3>Predictive Maintenance Alerts</h3>
     <table border="1">
@@ -71,58 +30,6 @@
         </tr>
         {% endfor %}
     </table>
-
-    <!-- CO₂ Savings & ESG Reports -->
-    <h3>CO₂ Savings & ESG Reports</h3>
-    <table border="1">
-        <tr>
-            <th>Timestamp</th>
-            <th>Total Energy Generated (MW)</th>
-            <th>Fossil Fuel Offset (MW)</th>
-            <th>CO₂ Reduction (kg)</th>
-        </tr>
-        {% for report in sustainability_reports %}
-        <tr>
-            <td>{{ report.timestamp }}</td>
-            <td>{{ report.total_energy_generated }}</td>
-            <td>{{ report.fossil_fuel_offset }}</td>
-            <td>{{ report.co2_reduction }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <!-- Grid Demand-Supply Balancing -->
-    <h3>Grid Demand-Supply Balancing</h3>
-    <canvas id="gridBalanceChart"></canvas>
-
-    <script>
-        var labels = [{% for balance in grid_balances %}"{{ balance.timestamp }}",{% endfor %}];
-        var demandData = [{% for balance in grid_balances %}{{ balance.energy_demand }},{% endfor %}];
-        var supplyData = [{% for balance in grid_balances %}{{ balance.energy_supply }},{% endfor %}];
-
-        var ctx = document.getElementById('gridBalanceChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Energy Demand (MW)',
-                        data: demandData,
-                        borderColor: 'red',
-                        fill: false
-                    },
-                    {
-                        label: 'Energy Supply (MW)',
-                        data: supplyData,
-                        borderColor: 'green',
-                        fill: false
-                    }
-                ]
-            }
-        });
-    </script>
-
     <h3>More Features</h3>
     <ul>
         <li><a href="{% url 'dashboard:map_view' %}">View GIS Map</a></li>
