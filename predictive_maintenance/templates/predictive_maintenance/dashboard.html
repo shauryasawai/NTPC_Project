@@ -13,7 +13,7 @@
         <td>{{ sensor.temperature }}</td>
         <td>{{ sensor.vibration }}</td>
         <td>{{ sensor.pressure }}</td>
-        <td style="color: {% if sensor.failure_risk > 0.5 %}red{% else %}green{% endif %}">
+        <td style="color: {% if sensor.failure_risk > 0.3 %}red{% else %}green{% endif %}">
             {{ sensor.failure_risk|floatformat:2 }}
         </td>
     </tr>

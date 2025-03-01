@@ -44,4 +44,8 @@ def detect_anomalies():
 
     for i, obj in enumerate(data):
         obj.failure_risk = reconstruction_loss[i]
+        
+        # **Mark danger if above threshold**
+        if obj.failure_risk > 0.30:
+            print(f"⚠️ ALERT: {obj.equipment_id} is at HIGH FAILURE RISK! ({obj.failure_risk:.2f})")
         obj.save()

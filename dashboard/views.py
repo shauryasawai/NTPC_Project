@@ -14,5 +14,5 @@ def home(request):
 
 def map_view(request):
     # Pass sensor data for map visualization
-    sensors = SensorData.objects.all()
+    sensors = SensorData.objects.filter(failure_risk__gt=0.30)
     return render(request, "dashboard/map.html", {"sensors": sensors})
