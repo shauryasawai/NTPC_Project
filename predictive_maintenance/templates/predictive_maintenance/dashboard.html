@@ -1,21 +1,190 @@
-<h2>Predictive Maintenance Dashboard</h2>
-<table border="1">
-    <tr>
-        <th>Equipment ID</th>
-        <th>Temperature</th>
-        <th>Vibration</th>
-        <th>Pressure</th>
-        <th>Failure Risk</th>
-    </tr>
-    {% for sensor in sensors %}
-    <tr>
-        <td>{{ sensor.equipment_id }}</td>
-        <td>{{ sensor.temperature }}</td>
-        <td>{{ sensor.vibration }}</td>
-        <td>{{ sensor.pressure }}</td>
-        <td style="color: {% if sensor.failure_risk > 0.3 %}red{% else %}green{% endif %}">
-            {{ sensor.failure_risk|floatformat:2 }}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Predictive Maintenance Dashboard</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    /* Dark background and base styling */
+    body {
+  background: linear-gradient(135deg, #09203f, #537895);
+  color: #fff;
+  position: relative;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+    /* Cloud overlay effect */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      background: url('https://www.transparenttextures.com/patterns/clouds.png') repeat-x;
+      opacity: 0.15;
+      animation: moveClouds 60s linear infinite;
+      z-index: -1;
+    }
+    @keyframes moveClouds {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    /* Glassmorphism card styling */
+    .card {
+      background: rgba(31, 41, 55, 0.8);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    }
+    /* Gradient header text with shimmer effect */
+    .gradient-header {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff8a00, #e52e71);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mx-auto p-6 relative z-10">
+    <!-- Header & Last Updated -->
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="gradient-header">Predictive Maintenance Dashboard</h2>
+    </div>
+
+    <!-- Tabs (optional) -->
+    <div class="flex space-x-6 border-b border-gray-700 mb-4">
+      <button class="pb-2 border-b-2 border-blue-500 text-blue-500 font-semibold focus:outline-none">
+        Upcoming Maintenance
+      </button>
+      <!-- Additional tabs can be added here -->
+    </div>
+
+    <!-- Sensor Data Table -->
+    <div class="overflow-x-auto mb-8">
+      <table class="min-w-full bg-gray-800 rounded-lg overflow-hidden">
+        <thead>
+          <tr class="border-b border-gray-700 text-left">
+            <th class="px-4 py-3 text-gray-400 font-medium">Equipment ID</th>
+            <th class="px-4 py-3 text-gray-400 font-medium">Temperature</th>
+            <th class="px-4 py-3 text-gray-400 font-medium">Vibration</th>
+            <th class="px-4 py-3 text-gray-400 font-medium">Pressure</th>
+            <th class="px-4 py-3 text-gray-400 font-medium">Failure Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sensor in sensors %}
+          <tr class="border-b border-gray-700 hover:bg-gray-700">
+            <td class="px-4 py-3">{{ sensor.equipment_id }}</td>
+            <td class="px-4 py-3">{{ sensor.temperature }}</td>
+            <td class="px-4 py-3">{{ sensor.vibration }}</td>
+            <td class="px-4 py-3">{{ sensor.pressure }}</td>
+            <td class="px-4 py-3">
+              <span class="inline-block px-2 py-1 rounded-full text-white
+                {% if sensor.failure_risk > 0.5 %}
+                  bg-red-600
+                {% else %}
+                  bg-green-600
+                {% endif %}
+              ">
+                {{ sensor.failure_risk|floatformat:2 }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Predictive Maintenance Alerts Chart Card -->
+    <div class="mb-8 card p-4 rounded-lg">
+      <h3 class="text-2xl font-semibold mb-4">Predictive Maintenance Alerts</h3>
+      <div id="maintenanceChart" style="width: 100%; height: 400px;"></div>
+    </div>
+
+    <!-- Charts Section -->
+    <!-- Energy Forecast Chart Card -->
+    <div class="mb-8 card p-4 rounded-lg">
+      <h3 class="text-2xl font-semibold mb-4">Energy Forecast</h3>
+      <div id="energyChart" style="width: 100%; height: 400px;"></div>
+    </div>
+
+  </div>
+
+  <!-- Plotly Charts Script -->
+  <script>
+    // =======================
+    // Energy Forecast Chart
+    // =======================
+    var timestamps = [{% for row in forecasts %}"{{ row.timestamp|escapejs }}",{% endfor %}];
+    var solarOutput = [{% for row in forecasts %}{{ row.solar_output|default:"0" }},{% endfor %}];
+    var windOutput = [{% for row in forecasts %}{{ row.wind_output|default:"0" }},{% endfor %}];
+
+    var solarTrace = {
+      x: timestamps,
+      y: solarOutput,
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: 'Solar Output (kW)',
+      line: { color: 'yellow', width: 2 }
+    };
+
+    var windTrace = {
+      x: timestamps,
+      y: windOutput,
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: 'Wind Output (kW)',
+      line: { color: 'cyan', width: 2 }
+    };
+
+    Plotly.newPlot('energyChart', [solarTrace, windTrace], {
+      title: 'Energy Forecast Trends',
+      xaxis: { title: 'Timestamp', tickangle: -45 },
+      yaxis: { title: 'Energy Output (kW)' },
+      hovermode: 'x',
+      template: 'plotly_dark'
+    });
+
+    // =================================
+    // Predictive Maintenance Chart
+    // =================================
+    var equipmentIDs = [{% for sensor in sensors %}"{{ sensor.equipment_id|escapejs }}",{% endfor %}];
+    var failureRisk = [{% for sensor in sensors %}{{ sensor.failure_risk|default:"0" }},{% endfor %}];
+
+    var maintenanceTrace = {
+      x: equipmentIDs,
+      y: failureRisk,
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: 'Failure Risk',
+      line: { color: 'blue', width: 2 },
+      marker: {
+        color: failureRisk.map(val => val > 0.5 ? 'red' : 'green'),
+        size: 8
+      }
+    };
+
+    Plotly.newPlot('maintenanceChart', [maintenanceTrace], {
+      title: 'Predictive Maintenance Alerts',
+      xaxis: { title: 'Equipment ID' },
+      yaxis: { title: 'Failure Risk', range: [0, 1] },
+      hovermode: 'closest',
+      template: 'plotly_dark'
+    });
+  </script>
+</body>
+</html>
