@@ -5,7 +5,7 @@ from django.conf import settings
 from django.http import HttpResponse
 
 def home(request):
-    return HttpResponse("<h2>Welcome to SynergyGrid</h2><p><a href='/forecasting/'>Go to Energy Forecasting</a></p>")
+    return HttpResponse("<h2>Welcome to SynergyGrid</h2><p><a href='/forecasting/'>Go to Energy Forecasting</a></p><p><a href='/maintenance/'>Go to Equipment Maintenance Predictions</a></p><p><a href='/dashboard/'>Visit Dashboard</a></p><p><a href='/forecasting/'>Users/Role</a></p>")
 
 urlpatterns = [
     path('', home, name='home'),
