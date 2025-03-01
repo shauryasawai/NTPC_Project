@@ -138,11 +138,7 @@ def home(request):
             <p><a class="btn" href="/forecasting/">Go to Energy Forecasting</a></p>
             <p><a class="btn" href="/maintenance/">Go to Equipment Maintenance Predictions</a></p>
             <p><a class="btn" href="/dashboard/">Visit Dashboard</a></p>
-<<<<<<< HEAD
             <p><a class="btn" href="/users/register/">Users/Role</a></p>
-=======
-            <p><a class="btn" href="/forecasting/">Users/Role</a></p>
->>>>>>> 6563e7787a113086a8b39d39cb3768cb08de8f3c
           </div>
         </div>
       </div>

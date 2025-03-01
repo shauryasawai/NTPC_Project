@@ -4,23 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Equipment &amp; Energy Status Map</title>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <!-- Particles.js -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <style>
-    /* Overall background gradient with dark tones */
     body {
       background: linear-gradient(135deg, #1f2937, #111827);
       color: white;
       position: relative;
       min-height: 100vh;
     }
-    /* Particle background overlay */
     #particles-js {
       position: fixed;
       top: 0;
@@ -29,7 +23,6 @@
       height: 100%;
       z-index: -2;
     }
-    /* Glassmorphism-style card for the map container */
     .card {
       background: rgba(31, 41, 55, 0.85);
       backdrop-filter: blur(6px);
@@ -41,13 +34,11 @@
     .card:hover {
       transform: translateY(-4px);
     }
-    /* Map container style */
     #map {
       min-height: 500px;
       border-radius: 0.5rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
-    /* Gradient header style */
     h2 {
       background: linear-gradient(45deg, #1D4ED8, #3B82F6);
       -webkit-background-clip: text;
@@ -56,7 +47,6 @@
   </style>
 </head>
 <body>
-  <!-- Particle background -->
   <div id="particles-js"></div>
   <div class="container mx-auto p-6 relative z-10">
     <h2 class="text-3xl font-bold mb-6">Equipment &amp; Energy Status Map</h2>
@@ -66,87 +56,51 @@
   </div>
 
   <script>
-    /* Initialize Particles.js for a dynamic, interactive background */
     particlesJS("particles-js", {
       "particles": {
-        "number": {
-          "value": 80,
-          "density": { "enable": true, "value_area": 800 }
-        },
+        "number": { "value": 100, "density": { "enable": true, "value_area": 1000 } },
         "color": { "value": "#ffffff" },
-        "shape": {
-          "type": "circle",
-          "stroke": { "width": 0, "color": "#000000" },
-          "polygon": { "nb_sides": 5 }
-        },
-        "opacity": {
-          "value": 0.3,
-          "random": false
-        },
-        "size": {
-          "value": 3,
-          "random": true
-        },
-        "line_linked": {
-          "enable": true,
-          "distance": 150,
-          "color": "#ffffff",
-          "opacity": 0.4,
-          "width": 1
-        },
-        "move": {
-          "enable": true,
-          "speed": 2,
-          "direction": "none",
-          "random": false,
-          "straight": false,
-          "out_mode": "out"
-        }
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.3 },
+        "size": { "value": 3, "random": true },
+        "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.4, "width": 1 },
+        "move": { "enable": true, "speed": 2 }
       },
       "interactivity": {
-        "detect_on": "canvas",
-        "events": {
-          "onhover": { "enable": true, "mode": "repulse" },
-          "onclick": { "enable": true, "mode": "push" },
-          "resize": true
-        },
-        "modes": {
-          "repulse": { "distance": 100, "duration": 0.4 },
-          "push": { "particles_nb": 4 }
-        }
+        "events": { "onhover": { "enable": true, "mode": "repulse" }, "onclick": { "enable": true, "mode": "push" } }
       },
       "retina_detect": true
     });
 
     function initMap() {
-      var map = L.map('map').setView([20.5937, 78.9629], 5);  // Centered on India
-
+      var map = L.map('map').setView([20.5937, 78.9629], 5);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
       }).addTo(map);
 
       var sensors = [
-          {% for sensor in sensors %}
-          { "lat": 28.7041, "lng": 77.1025, "name": "{{ sensor.equipment_id }}", "risk": {{ sensor.failure_risk }} },
-          {% endfor %}
+          { "lat": 28.7041, "lng": 77.1025, "name": "Sensor A", "risk": 0.45 },
+          { "lat": 19.0760, "lng": 72.8777, "name": "Sensor B", "risk": 0.25 },
+          { "lat": 13.0827, "lng": 80.2707, "name": "Sensor C", "risk": 0.65 },
+          { "lat": 22.5726, "lng": 88.3639, "name": "Sensor D", "risk": 0.30 },
+          { "lat": 26.8467, "lng": 80.9462, "name": "Sensor E", "risk": 0.55 }
       ];
 
       var sensorCoordinates = [];
       sensors.forEach(function(sensor) {
-        var markerColor = sensor.risk > 0.5 ? 'red' : 'green';
+        var markerColor = sensor.risk > 0.35 ? 'red' : 'green';
         L.circleMarker([sensor.lat, sensor.lng], {
           color: markerColor,
           radius: 8,
           fillOpacity: 0.8,
           weight: 2
         })
-        .bindPopup(sensor.name + " - Risk: " + sensor.risk.toFixed(2))
+        .bindPopup(`${sensor.name} - Risk: ${sensor.risk.toFixed(2)}`)
         .addTo(map);
         
         sensorCoordinates.push([sensor.lat, sensor.lng]);
       });
 
-      // Connect sensor markers with a polyline if there are multiple sensors
       if (sensorCoordinates.length > 1) {
         L.polyline(sensorCoordinates, { color: 'blue', weight: 3, opacity: 0.7 }).addTo(map);
       }
