@@ -1,13 +1,49 @@
-<h2>Energy Forecast</h2>
-<table>
-    <tr>
-        <th>Time</th>
-        <th>Predicted Output</th>
-    </tr>
-    {% for row in forecast.itertuples %}
-    <tr>
-        <td>{{ row.ds }}</td>
-        <td>{{ row.yhat }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Energy Forecast</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Energy Forecast (Next 72 Hours)</h2>
+
+    <canvas id="solarChart"></canvas>
+    <canvas id="windChart"></canvas>
+
+    <script>
+        var solarLabels = {{ solar_labels|safe }};
+        var solarData = {{ solar_data|safe }};
+        var windLabels = {{ wind_labels|safe }};
+        var windData = {{ wind_data|safe }};
+
+        var solarCtx = document.getElementById('solarChart').getContext('2d');
+        var windCtx = document.getElementById('windChart').getContext('2d');
+
+        new Chart(solarCtx, {
+            type: 'line',
+            data: {
+                labels: solarLabels,
+                datasets: [{
+                    label: 'Solar Output (MW)',
+                    data: solarData,
+                    borderColor: 'orange',
+                    fill: false
+                }]
+            }
+        });
+
+        new Chart(windCtx, {
+            type: 'line',
+            data: {
+                labels: windLabels,
+                datasets: [{
+                    label: 'Wind Output (MW)',
+                    data: windData,
+                    borderColor: 'blue',
+                    fill: false
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

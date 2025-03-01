@@ -165,6 +165,8 @@ EMAIL_HOST_USER = 'vaibhavpatyal507@gmail.com'
 EMAIL_HOST_PASSWORD = 'hqmxdskfytayytud'
 
 
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="plotly")
 
 
 

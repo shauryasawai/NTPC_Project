@@ -27,7 +27,7 @@
 
         sensors.forEach(function(sensor) {
             let markerColor;
-            if (sensor.risk > 0.4) {
+            if (sensor.risk > 0.5) {
                 markerColor = 'red';   // High risk
             } else if (sensor.risk >= 0.3) {
                 markerColor = 'orange'; // Medium risk

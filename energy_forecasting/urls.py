@@ -1,9 +1,7 @@
 from django.urls import path
-from .views import forecast_view, upload_data
-
-app_name = 'energy_forecasting'
+from .views import forecast_view, forecast_api
 
 urlpatterns = [
-    path('', forecast_view, name='forecast'),
-    path('upload/', upload_data, name='upload_data'),
+    path('', forecast_view, name='forecast_view'),
+    path('api/', forecast_api, name='forecast_api'),
 ]

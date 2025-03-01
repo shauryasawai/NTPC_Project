@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from energy_forecasting.models import ForecastData
+from energy_forecasting.models import EnergyData
 from predictive_maintenance.models import SensorData
 
 def home(request):
     # Get latest energy forecast
-    forecasts = ForecastData.objects.all().order_by('-timestamp')[:10]
+    forecasts = EnergyData.objects.all().order_by('-timestamp')[:10]
 
     # Get latest equipment health data
     sensors = SensorData.objects.all().order_by('-timestamp')[:10]
