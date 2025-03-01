@@ -1,40 +1,208 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dashboard Overview</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NTPC Energy Management</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    /* Overall background gradient */
+    body {
+      background: linear-gradient(135deg, #1f2937, #111827);
+    }
+    /* Sidebar with gradient & hover effects */
+    aside {
+      background: linear-gradient(180deg, #1f2937, #111827);
+    }
+    .sidebar-item {
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .sidebar-item:hover {
+      transform: scale(1.05);
+      background-color: #374151;
+    }
+    /* Card style with subtle glassmorphism effect and hover lift */
+    .card {
+      background: rgba(31, 41, 55, 0.85);
+      backdrop-filter: blur(6px);
+      border-radius: 0.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+    /* Transition for interactive elements */
+    .transition-all {
+      transition: all 0.3s ease-in-out;
+    }
+  </style>
 </head>
-<body>
+<body class="text-white min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="w-64 flex flex-col">
+    <!-- Logo / Brand -->
+    <div class="flex items-center h-16 px-4 border-b border-gray-700">
+      <div class="flex items-center space-x-2">
+        <div class="bg-white text-black rounded-md px-2 py-1 font-bold">
+          NTPC
+        </div>
+        <span class="font-semibold text-lg">Energy Management</span>
+      </div>
+    </div>
+    <!-- Nav Menu -->
+    <nav class="flex-1 p-4">
+      <ul class="space-y-2">
+        <li>
+          <a href="" class="sidebar-item flex items-center px-3 py-2 rounded-md bg-gray-800 hover:bg-gray-700">
+            <span class="mr-3">🏠</span> Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="/forecasting" class="sidebar-item flex items-center px-3 py-2 rounded-md hover:bg-gray-700">
+            <span class="mr-3">🔮</span> Energy Forecasting
+          </a>
+        </li>
+        <li>
+          <a href="/maintenance" class="sidebar-item flex items-center px-3 py-2 rounded-md hover:bg-gray-700">
+            <span class="mr-3">⚙️</span> Maintenance
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
 
-    <h2>Dashboard Overview</h2>
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col">
+    <!-- Top Bar with User Icon -->
+    <div class="flex items-center justify-end h-16 px-4 border-b border-gray-700">
+      <div class="rounded-full bg-gray-800 p-2 hover:bg-gray-700 cursor-pointer transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M5.121 17.804A7.978 7.978 0 0112 15c2.21 0 4.21.896 5.657 2.343m1.172-1.172A7.978 7.978 0 0012 13c-2.21 0-4.21.896-5.657 2.343m1.172-1.172A7.978 7.978 0 0112 11c2.21 0 4.21.896 5.657 2.343M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </div>
+    </div>
 
-    <!-- Predictive Maintenance Alerts -->
-    <h3>Predictive Maintenance Alerts</h3>
-    <table border="1">
-        <tr>
-            <th>Equipment ID</th>
-            <th>Temperature</th>
-            <th>Vibration</th>
-            <th>Pressure</th>
-            <th>Failure Risk</th>
-        </tr>
-        {% for sensor in sensors %}
-        <tr>
-            <td>{{ sensor.equipment_id }}</td>
-            <td>{{ sensor.temperature }}</td>
-            <td>{{ sensor.vibration }}</td>
-            <td>{{ sensor.pressure }}</td>
-            <td style="color: {% if sensor.failure_risk > 0.3 %}red{% else %}green{% endif %}">
-                {{ sensor.failure_risk|floatformat:2 }}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    <h3>More Features</h3>
-    <ul>
-        <li><a href="{% url 'dashboard:map_view' %}">View GIS Map</a></li>
-        <li><a href="{% url 'dashboard:analytics_dashboard' %}">Detailed Reports & Analytics</a></li>
-    </ul>
+    <!-- Dashboard Content -->
+    <main class="flex-1 p-6">
+      <h1 class="text-4xl font-bold mb-6">Dashboard</h1>
 
+      <!-- Cards Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1: Current Power Output -->
+        <div class="card bg-gray-800 rounded-lg p-4 transition-all">
+          <div class="text-sm uppercase font-medium text-gray-400 mb-2">Current Power Output</div>
+          <div class="text-3xl font-bold">1,245 MW</div>
+          <div class="text-green-400 text-sm mt-1">+20.1% from last hour</div>
+        </div>
+        <!-- Card 2: Efficiency Rate -->
+        <div class="card bg-gray-800 rounded-lg p-4 transition-all">
+          <div class="text-sm uppercase font-medium text-gray-400 mb-2">Efficiency Rate</div>
+          <div class="text-3xl font-bold">92.5%</div>
+          <div class="text-green-400 text-sm mt-1">+2.5% from yesterday</div>
+        </div>
+        <!-- Card 3: Energy Storage -->
+        <div class="card bg-gray-800 rounded-lg p-4 transition-all">
+          <div class="text-sm uppercase font-medium text-gray-400 mb-2">Energy Storage</div>
+          <div class="text-3xl font-bold">78%</div>
+          <div class="text-gray-400 text-sm mt-1">Capacity available</div>
+        </div>
+        <!-- Card 4: Forecasted Demand -->
+        <div class="card bg-gray-800 rounded-lg p-4 transition-all">
+          <div class="text-sm uppercase font-medium text-gray-400 mb-2">Forecasted Demand</div>
+          <div class="text-3xl font-bold">1,350 MW</div>
+          <div class="text-green-400 text-sm mt-1">+15% expected in 3 hours</div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="mt-8">
+        <!-- Energy Forecast Chart -->
+        <h2 class="text-2xl font-semibold mb-4">Energy Forecast</h2>
+        <div class="card bg-gray-800 p-4 rounded-lg mb-6 transition-all">
+          <div id="energyChart" style="width: 100%; height: 400px;"></div>
+        </div>
+
+        <!-- Predictive Maintenance Chart as Line Chart -->
+        <h2 class="text-2xl font-semibold mb-4">Predictive Maintenance Alerts</h2>
+        <div class="card bg-gray-800 p-4 rounded-lg mb-6 transition-all">
+          <div id="maintenanceChart" style="width: 100%; height: 400px;"></div>
+        </div>
+
+        <!-- GIS Map Button -->
+        <div class="mt-6">
+          <a href="{% url 'dashboard:map_view' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-all">
+            View GIS Map
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Plotly Charts Script -->
+  <script>
+    // ----- Energy Forecast Chart (using real data from Django) -----
+    var timestamps = [{% for row in forecasts %}"{{ row.timestamp|escapejs }}",{% endfor %}];
+    var solarOutput = [{% for row in forecasts %}{{ row.solar_output|default:"0" }},{% endfor %}];
+    var windOutput = [{% for row in forecasts %}{{ row.wind_output|default:"0" }},{% endfor %}];
+
+    var solarTrace = {
+      x: timestamps,
+      y: solarOutput,
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: 'Solar Output (kW)',
+      line: { color: 'yellow', width: 2 }
+    };
+
+    var windTrace = {
+      x: timestamps,
+      y: windOutput,
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: 'Wind Output (kW)',
+      line: { color: 'cyan', width: 2 }
+    };
+
+    Plotly.newPlot('energyChart', [solarTrace, windTrace], {
+      title: 'Energy Forecast Trends',
+      xaxis: { title: 'Timestamp', tickangle: -45 },
+      yaxis: { title: 'Energy Output (kW)' },
+      hovermode: 'x',
+      template: 'plotly_dark'
+    });
+
+    // ----- Predictive Maintenance Chart as Line Chart -----
+    var equipmentIDs = [{% for sensor in sensors %}"{{ sensor.equipment_id|escapejs }}",{% endfor %}];
+    var failureRisk = [{% for sensor in sensors %}{{ sensor.failure_risk|default:"0" }},{% endfor %}];
+
+    var maintenanceTrace = {
+      x: equipmentIDs,
+      y: failureRisk,
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: 'Failure Risk',
+      line: {
+        color: 'blue',
+        width: 2
+      },
+      marker: {
+        color: failureRisk.map(val => val > 0.5 ? 'red' : 'green'),
+        size: 8
+      }
+    };
+
+    Plotly.newPlot('maintenanceChart', [maintenanceTrace], {
+      title: 'Predictive Maintenance Alerts',
+      xaxis: { title: 'Equipment ID' },
+      yaxis: { title: 'Failure Risk', range: [0, 1] },
+      hovermode: 'closest',
+      template: 'plotly_dark'
+    });
+  </script>
 </body>
 </html>
