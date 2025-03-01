@@ -1,49 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Energy Forecast</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <title>Energy Forecast</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Solid dark background */
+    body {
+  background: linear-gradient(135deg, #09203f, #537895);
+  color: #fff;
+  position: relative;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+    /* Cloud overlay effect */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      background: url('https://www.transparenttextures.com/patterns/clouds.png') repeat-x;
+      opacity: 0.15;
+      animation: moveClouds 60s linear infinite;
+      z-index: -1;
+    }
+    @keyframes moveClouds {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    /* Glassmorphism style for chart cards with hover effects */
+    .chart-card {
+      background: rgba(31, 41, 55, 0.8);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .chart-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    }
+    /* Gradient header text with shimmer effect */
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff8a00, #e52e71);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.5rem;
+    }
+  </style>
 </head>
 <body>
-    <h2>Energy Forecast (Next 72 Hours)</h2>
+  <div class="container mx-auto p-6 relative z-10">
+    <h2 class="text-center">Energy Forecast (Next 72 Hours)</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Solar Chart Card -->
+      <div class="chart-card p-4 rounded-lg shadow-lg">
+        <h3 class="text-xl font-semibold mb-4">Solar Output (MW)</h3>
+        <div class="relative h-80">
+          <canvas id="solarChart"></canvas>
+        </div>
+      </div>
+      <!-- Wind Chart Card -->
+      <div class="chart-card p-4 rounded-lg shadow-lg">
+        <h3 class="text-xl font-semibold mb-4">Wind Output (MW)</h3>
+        <div class="relative h-80">
+          <canvas id="windChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <canvas id="solarChart"></canvas>
-    <canvas id="windChart"></canvas>
+  <script>
+    // Data variables injected from Django
+    var solarLabels = {{ solar_labels|safe }};
+    var solarData = {{ solar_data|safe }};
+    var windLabels = {{ wind_labels|safe }};
+    var windData = {{ wind_data|safe }};
 
-    <script>
-        var solarLabels = {{ solar_labels|safe }};
-        var solarData = {{ solar_data|safe }};
-        var windLabels = {{ wind_labels|safe }};
-        var windData = {{ wind_data|safe }};
+    // Common Chart.js options for dark-themed UI
+    var commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: 'white' } }
+      },
+      scales: {
+        x: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+        y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+      }
+    };
 
-        var solarCtx = document.getElementById('solarChart').getContext('2d');
-        var windCtx = document.getElementById('windChart').getContext('2d');
+    // Solar Chart
+    var solarCtx = document.getElementById('solarChart').getContext('2d');
+    new Chart(solarCtx, {
+      type: 'line',
+      data: {
+        labels: solarLabels,
+        datasets: [{
+          label: 'Solar Output (MW)',
+          data: solarData,
+          borderColor: 'orange',
+          fill: false,
+          tension: 0.3
+        }]
+      },
+      options: commonOptions
+    });
 
-        new Chart(solarCtx, {
-            type: 'line',
-            data: {
-                labels: solarLabels,
-                datasets: [{
-                    label: 'Solar Output (MW)',
-                    data: solarData,
-                    borderColor: 'orange',
-                    fill: false
-                }]
-            }
-        });
-
-        new Chart(windCtx, {
-            type: 'line',
-            data: {
-                labels: windLabels,
-                datasets: [{
-                    label: 'Wind Output (MW)',
-                    data: windData,
-                    borderColor: 'blue',
-                    fill: false
-                }]
-            }
-        });
-    </script>
+    // Wind Chart
+    var windCtx = document.getElementById('windChart').getContext('2d');
+    new Chart(windCtx, {
+      type: 'line',
+      data: {
+        labels: windLabels,
+        datasets: [{
+          label: 'Wind Output (MW)',
+          data: windData,
+          borderColor: 'blue',
+          fill: false,
+          tension: 0.3
+        }]
+      },
+      options: commonOptions
+    });
+  </script>
 </body>
 </html>
