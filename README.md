@@ -1,4 +1,4 @@
-# Django App README
+# NTPC PROJECT README
 
 ## Introduction
 
@@ -21,8 +21,6 @@ Clone the Django application repository to your local machine using the followin
 ```bash
 git clone https://github.com/shauryasawai/NTPC_Project
 ```
-
-Replace `<repository-url>` with the URL of your repository.
 
 ### Step 2: Navigate to the Project Directory
 
